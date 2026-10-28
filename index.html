@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CROSSWORK｜職業でつながる匿名SNS</title>
+<style>
+:root {
+  --ink: #20283a;
+  --muted: #697386;
+  --line: #e4e8f0;
+  --paper: #ffffff;
+  --canvas: #f4f6fb;
+  --brand: #354a91;
+  --brand-dark: #26376f;
+  --soft: #eef1ff;
+  --accent: #dce5ff;
+  --shadow: 0 10px 30px rgba(28, 42, 78, .06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  line-height: 1.6;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.site-header {
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--line);
+  padding: 19px 20px;
+  text-align: center;
+}
+
+.brand {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.brand span { color: var(--brand); }
+.site-header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+main {
+  width: min(100% - 28px, 680px);
+  margin: 26px auto 38px;
+}
+
+.intro { margin: 0 0 18px; padding: 4px 3px 10px; }
+.eyebrow { color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+.intro h2 { margin: 4px 0 6px; font-size: clamp(22px, 5vw, 29px); line-height: 1.35; }
+.intro p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.panel, .post {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.section-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.section-heading h2 { margin: 0; font-size: 17px; }
+.section-icon {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  flex: 0 0 34px; border-radius: 11px; background: var(--soft); color: var(--brand); font-weight: 800;
+}
+
+.helper { margin: 4px 0 15px; color: var(--muted); font-size: 13px; }
+label { display: block; margin: 13px 0 6px; font-size: 13px; font-weight: 700; }
+
+select, input, textarea {
+  display: block; width: 100%; border: 1px solid #d9deea; border-radius: 10px;
+  padding: 11px 12px; background: #fff; color: var(--ink); outline: none;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: #7d91d5;
+  box-shadow: 0 0 0 3px rgba(83, 107, 190, .12);
+}
+
+textarea { min-height: 112px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  border: 0; border-radius: 10px; padding: 11px 16px; font-weight: 750;
+  transition: transform .12s ease, background .12s ease, opacity .12s ease;
+}
+
+.button:active { transform: translateY(1px); }
+.button-primary { background: var(--brand); color: #fff; }
+.button-primary:hover { background: var(--brand-dark); }
+.button-secondary { background: #f0f2f8; color: #303b56; }
+.button-secondary:hover { background: #e6eaf4; }
+.button-full { width: 100%; margin-top: 15px; }
+
+.profile-status { padding: 10px 12px; border-radius: 10px; background: #f6f7fb; color: var(--muted); font-size: 13px; }
+.profile-status.is-set { background: #f0f3ff; color: var(--brand-dark); }
+
+.muted { color: var(--muted); font-size: 12px; }
+.composer-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.char-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
+.feed-tools { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.feed-tools > div { flex: 1; }
+.feed-tools label { margin-top: 10px; }
+.feed-title { margin: 0; font-size: 18px; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.tab-btn { background: #f0f2f8; color: var(--muted); border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.tab-btn.active { background: var(--brand); color: #fff; }
+
+.post { padding: 18px; }
+.post-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 999px; background: var(--soft); color: var(--brand-dark); font-size: 12px; font-weight: 700; }
+.post-meta-right { text-align: right; }
+.anonymous-label { color: #8991a1; font-size: 11px; white-space: nowrap; display: block; }
+.post-time { color: var(--muted); font-size: 11px; }
+
+.post-text { margin: 16px 0; line-height: 1.85; overflow-wrap: anywhere; white-space: normal; }
+.post-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-top: 1px solid #f0f2f6; padding-top: 13px; }
+.post-foot .button { padding: 7px 11px; font-size: 13px; }
+.like-button.is-liked { background: #fff0f4; color: #b72e5b; }
+
+.empty-state { text-align: center; padding: 28px 18px; color: var(--muted); }
+.empty-state strong { display: block; margin-bottom: 5px; color: var(--ink); }
+
+footer { text-align: center; padding: 16px 8px 4px; color: #8991a1; font-size: 12px; }
+
+/* 返信エリアデザイン */
+.reply-list-container { margin-top: 12px; border-top: 1px solid #f0f2f6; padding-top: 10px; }
+.reply { margin-top: 10px; padding: 10px 12px; border-left: 3px solid #cbd5e1; background: #f8f9ff; border-radius: 0 10px 10px 0; }
+
+/* 投稿主の返信（目立たせるデザイン） */
+.reply.is-author {
+  border-left: 4px solid var(--brand);
+  background: #f0f4ff;
+}
+
+.reply-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+
+/* 「投稿主」バッジ */
+.author-badge {
+  display: inline-block;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.reply-text { margin: 4px 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply-actions { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+.reply-actions .button { padding: 4px 9px; font-size: 12px; }
+
+.reply-children { margin-left: 16px; padding-left: 8px; border-left: 2px dashed #dce5ff; margin-top: 8px; }
+
+.btn-more-replies {
+  width: 100%; margin-top: 10px; padding: 8px; font-size: 13px;
+  background: #eef1ff; color: var(--brand-dark); border: 1px dashed #c0cffa; border-radius: 8px;
+}
+.btn-more-replies:hover { background: #e2e7ff; }
+
+.btn-toggle-nested {
+  margin-top: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+  background: #ffffff; color: #4a5568; border: 1px solid #cbd5e1; border-radius: 6px;
+}
+.btn-toggle-nested:hover { background: #f1f5f9; }
+
+.reply-form { margin-top: 10px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
+.reply-form textarea { min-height: 70px; margin-bottom: 8px; }
+.reply-form .button { margin-right: 6px; padding: 6px 12px; font-size: 12px; }
+
+@media (max-width: 520px) {
+  main { width: min(100% - 20px, 680px); margin-top: 18px; }
+  .panel { padding: 16px; border-radius: 14px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .feed-tools { align-items: stretch; }
+  .post { padding: 15px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1 class="brand"><span>CROSS</span>WORK</h1>
+  <p>肩書きでつながり、言葉で知り合う。</p>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="eyebrow">A PLACE TO CROSS PATHS</div>
+    <h2>違う仕事だから、<br>話せることがある。</h2>
+    <p>職業をきっかけに、いつもと違う視点や考えに出会う匿名SNS。</p>
+  </section>
+
+  <section class="panel" id="profilePanel">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">01</span>
+      <h2>あなたの匿名プロフィール</h2>
+    </div>
+    <p class="helper">本名や勤務先は入力せず、職業と年代だけで交流します。</p>
+    <div class="form-row">
+      <div>
+        <label for="occupation">職業（公開）</label>
+        <select id="occupation">
+          <option value="会社員">会社員</option>
+          <option value="エンジニア">エンジニア</option>
+          <option value="医療・福祉">医療・福祉</option>
+          <option value="教育">教育</option>
+          <option value="販売・接客">販売・接客</option>
+          <option value="公務員">公務員</option>
+          <option value="自営業">自営業</option>
+          <option value="クリエイター">クリエイター</option>
+          <option value="学生">学生</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div>
+        <label for="age">年代（公開）</label>
+        <select id="age">
+          <option value="10代">10代</option>
+          <option value="20代">20代</option>
+          <option value="30代">30代</option>
+          <option value="40代">40代</option>
+          <option value="50代">50代</option>
+          <option value="60代以上">60代以上</option>
+          <option value="非公開">公開しない</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="occupationOtherWrap" hidden>
+      <label for="occupationOther">具体的な職業名（任意）</label>
+      <input type="text" id="occupationOther" placeholder="例：デザイナー、Webライターなど">
+    </div>
+
+    <button class="button button-primary button-full" id="saveProfile">プロフィールを設定</button>
+  </section>
+
+  <section class="panel" id="composer">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">02</span>
+      <h2>何を話してみますか？</h2>
+    </div>
+    <p class="helper">違う職業の人に聞いてみたいことや、日々の気づきを共有しましょう。</p>
+    <div id="currentProfile" class="profile-status">先にプロフィールを設定してください。</div>
+    <div class="composer-top">
+      <label for="message">投稿内容</label>
+      <span class="char-count" id="charCount">0 / 500</span>
+    </div>
+    <textarea id="message" maxlength="500" placeholder="例：仕事で大切にしていることは何ですか？"></textarea>
+    <button class="button button-primary button-full" id="publish">投稿する ↗</button>
+  </section>
+
+  <section class="panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="all">みんなの投稿</button>
+      <button class="tab-btn" data-tab="liked">いいねした投稿</button>
+      <button class="tab-btn" data-tab="replied">返信した投稿</button>
+    </div>
+
+    <div class="feed-tools" id="filterArea">
+      <div>
+        <label for="filter">職業で絞り込む</label>
+        <select id="filter">
+          <option value="すべて">すべての職業</option>
+          <option value="会社員">会社員</option>
+          <option value="エンジニア">エンジニア</option>
+          <option value="医療・福祉">医療・福祉</option>
+          <option value="教育">教育</option>
+          <option value="販売・接客">販売・接客</option>
+          <option value="公務員">公務員</option>
+          <option value="自営業">自営業</option>
+          <option value="クリエイター">クリエイター</option>
+          <option value="学生">学生</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <div id="feed" aria-live="polite"></div>
+
+  <footer>
+    CROSSWORK 試作版 · 投稿・返信はこのブラウザ内だけに保存されます。
+  </footer>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const $ = (id) => document.getElementById(id);
+
+  const escapeHTML = (str) => String(str ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[m]);
+
+  function formatTime(timestamp) {
+    if (!timestamp) return "";
+    const now = Date.now();
+    const diff = Math.floor((now - timestamp) / 1000);
+
+    if (diff < 60) return "たった今";
+    if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
+
+    const d = new Date(timestamp);
+    const month = d.getMonth() + 1;
+    const date = d.getDate();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${month}月${date}日 ${hours}:${minutes}`;
+  }
+
+  function load(key, fallback) {
+    try {
+      const val = localStorage.getItem(key);
+      return val !== null ? JSON.parse(val) : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function save(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch {
+      alert("保存に失敗しました。");
+    }
+  }
+
+  let profile = load("cw_profile", {});
+  let posts = load("cw_posts", [
+    {
+      id: "1", occupation: "エンジニア", occupationDetail: "", age: "20代",
+      text: "ほかの職業の人に質問です。仕事で大切にしていることは何ですか？",
+      likes: 2, liked: false, replies: [], createdAt: Date.now() - 3600000
+    },
+    {
+      id: "2", occupation: "医療・福祉", occupationDetail: "", age: "30代",
+      text: "忙しいとき、みなさんはどうやって気持ちを切り替えていますか？",
+      likes: 4, liked: false, replies: [], createdAt: Date.now() - 86400000
+    }
+  ]);
+
+  function fixReplies(items) {
+    if (!Array.isArray(items)) return [];
+    return items.map((item) => ({
+      ...item,
+      id: String(item.id),
+      createdAt: item.createdAt || Date.now(),
+      replies: fixReplies(item.replies)
+    }));
+  }
+  posts = fixReplies(posts);
+
+  let currentTab = "all";
+  const visibleReplies = new Set();
+  const expandedMore = new Set();
+  const visibleNested = new Set();
+
+  function occupationLabel(item) {
+    if (item.occupation === "その他") {
+      return (item.occupationDetail || "").trim() || "その他";
+    }
+    return item.occupation || "その他";
+  }
+
+  function saveAll() {
+    save("cw_posts", posts);
+    if (profile.occupation) save("cw_profile", profile);
+  }
+
+  function toggleOccupationOther() {
+    const isOther = $("occupation").value === "その他";
+    $("occupationOtherWrap").hidden = !isOther;
+    if (!isOther) $("occupationOther").value = "";
+  }
+
+  function updateProfileUI() {
+    $("occupation").value = profile.occupation || "会社員";
+    $("occupationOther").value = profile.occupationDetail || "";
+    toggleOccupationOther();
+    $("age").value = profile.age || "非公開";
+
+    if (!profile.occupation) {
+      $("currentProfile").textContent = "先にプロフィールを設定してください。";
+      $("currentProfile").classList.remove("is-set");
+      return;
+    }
+
+    $("currentProfile").textContent =
+      occupationLabel(profile) + " · " + (profile.age || "非公開");
+    $("currentProfile").classList.add("is-set");
+  }
+
+  let openReplyTarget = null;
+
+  function findReplyObj(list, targetId) {
+    for (const r of list) {
+      if (String(r.id) === String(targetId)) return r;
+      if (r.replies && r.replies.length > 0) {
+        const found = findReplyObj(r.replies, targetId);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  function hasUserReplied(replies) {
+    if (!Array.isArray(replies)) return false;
+    for (const r of replies) {
+      if (r.isMyReply) return true;
+      if (hasUserReplied(r.replies)) return true;
+    }
+    return false;
+  }
+
+  function renderReplyForm(postId, parentId) {
+    const pIdStr = parentId ? String(parentId) : "root";
+    const targetKey = `${postId}|${pIdStr}`;
+    if (openReplyTarget !== targetKey) return "";
+
+    return `
+      <form class="reply-form" data-post-id="${postId}" data-parent-id="${pIdStr}">
+        <textarea name="replyText" maxlength="500" required placeholder="返信を入力（500文字まで）"></textarea>
+        <div>
+          <button class="button button-primary" type="submit">送信</button>
+          <button class="button button-secondary" type="button" data-cancel>キャンセル</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function countAllReplies(replies) {
+    if (!Array.isArray(replies)) return 0;
+    let count = replies.length;
+    for (const r of replies) {
+      count += countAllReplies(r.replies);
+    }
+    return count;
+  }
+
+  // 返信が「親投稿の作成者（投稿主）」によるものか判定
+  function isPostAuthor(post, reply) {
+    return (
+      post.occupation === reply.occupation &&
+      (post.occupationDetail || "") === (reply.occupationDetail || "") &&
+      post.age === reply.age
+    );
+  }
+
+  function renderRepliesHtml(replies, post) {
+    if (!Array.isArray(replies) || replies.length === 0) return "";
+
+    return `<div class="reply-children">${replies.map((r) => {
+      const hasChildren = r.replies && r.replies.length > 0;
+      const childCount = countAllReplies(r.replies);
+      const isNestedVisible = visibleNested.has(r.id);
+      const isAuthor = isPostAuthor(post, r);
+
+      return `
+        <div class="reply ${isAuthor ? "is-author" : ""}">
+          <div class="reply-meta">
+            <span>
+              ${escapeHTML(occupationLabel(r))} · ${escapeHTML(r.age || "非公開")}
+              ${isAuthor ? '<span class="author-badge">投稿主</span>' : ''}
+            </span>
+            <span class="post-time">${formatTime(r.createdAt)}</span>
+          </div>
+          <div class="reply-text">${escapeHTML(r.text)}</div>
+          <div class="reply-actions">
+            <button class="button button-secondary" type="button" data-reply-btn="${post.id}|${r.id}">返信</button>
+            ${hasChildren ? `
+              <button class="button btn-toggle-nested" type="button" data-toggle-nested="${r.id}">
+                ${isNestedVisible ? "▲ 返信を隠す" : `↳ 返信を表示（${childCount}件）`}
+              </button>
+            ` : ""}
+          </div>
+          ${renderReplyForm(post.id, r.id)}
+          ${hasChildren && isNestedVisible ? renderRepliesHtml(r.replies, post) : ""}
+        </div>
+      `;
+    }).join("")}</div>`;
+  }
+
+  function render() {
+    const filter = $("filter").value;
+
+    let targetPosts = posts;
+    if (currentTab === "liked") {
+      targetPosts = posts.filter(p => p.liked);
+    } else if (currentTab === "replied") {
+      targetPosts = posts.filter(p => hasUserReplied(p.replies));
+    }
+
+    const visible = [...targetPosts].reverse().filter((p) =>
+      currentTab !== "all" || filter === "すべて" || p.occupation === filter
+    );
+
+    $("feed").innerHTML = visible.length ? visible.map((p) => {
+      const allReplies = p.replies || [];
+      const totalCount = allReplies.length;
+      const isVisible = visibleReplies.has(p.id);
+      const isExpanded = expandedMore.has(p.id);
+
+      const displayReplies = isExpanded ? allReplies : allReplies.slice(0, 5);
+      const remainingCount = totalCount - 5;
+
+      return `
+        <article class="post">
+          <div class="post-head">
+            <div class="tag-list">
+              <span class="tag">${escapeHTML(occupationLabel(p))}</span>
+              <span class="tag">${escapeHTML(p.age || "非公開")}</span>
+            </div>
+            <div class="post-meta-right">
+              <span class="anonymous-label">匿名ユーザー</span>
+              <span class="post-time">${formatTime(p.createdAt)}</span>
+            </div>
+          </div>
+          <p class="post-text">${escapeHTML(p.text).replace(/\n/g, "<br>")}</p>
+          <div class="post-foot">
+            <button class="button button-secondary ${p.liked ? "is-liked" : ""}" data-like="${p.id}">
+              ${p.liked ? "♥" : "♡"} いいね ${Number(p.likes) || 0}
+            </button>
+            <button class="button button-secondary" type="button" data-reply-btn="${p.id}|root">
+              返信する
+            </button>
+            ${totalCount > 0 ? `
+              <button class="button button-secondary" type="button" data-toggle-post-replies="${p.id}">
+                ${isVisible ? "返信を非表示" : `返信を表示（${totalCount}）`}
+              </button>
+            ` : ""}
+            <button class="button button-secondary" data-delete="${p.id}">削除</button>
+          </div>
+
+          ${renderReplyForm(p.id, null)}
+
+          ${isVisible && totalCount > 0 ? `
+            <div class="reply-list-container">
+              ${renderRepliesHtml(displayReplies, p)}
+              ${!isExpanded && remainingCount > 0 ? `
+                <button class="button btn-more-replies" type="button" data-show-more="${p.id}">
+                  さらに返信を表示（残り ${remainingCount} 件）
+                </button>
+              ` : ""}
+            </div>
+          ` : ""}
+        </article>
+      `;
+    }).join("") : `
+      <div class="panel empty-state">
+        <strong>${currentTab === "liked" ? "いいねした投稿はありません" : currentTab === "replied" ? "返信した投稿はありません" : "まだ投稿がありません"}</strong>
+      </div>
+    `;
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      currentTab = e.target.dataset.tab;
+      $("filterArea").style.display = currentTab === "all" ? "flex" : "none";
+      render();
+    });
+  });
+
+  $("occupation").addEventListener("change", toggleOccupationOther);
+
+  $("saveProfile").addEventListener("click", () => {
+    profile.occupation = $("occupation").value;
+    profile.occupationDetail = profile.occupation === "その他"
+      ? $("occupationOther").value.trim() : "";
+    profile.age = $("age").value;
+    saveAll();
+    updateProfileUI();
+    render();
+  });
+
+  $("message").addEventListener("input", () => {
+    $("charCount").textContent = `${$("message").value.length} / 500`;
+  });
+
+  $("publish").addEventListener("click", () => {
+    if (!profile.occupation) {
+      alert("先にプロフィールを設定してください。");
+      return;
+    }
+    const text = $("message").value.trim();
+    if (!text) return;
+
+    posts.push({
+      id: String(Date.now()),
+      occupation: profile.occupation,
+      occupationDetail: profile.occupation === "その他" ? profile.occupationDetail : "",
+      age: profile.age || "非公開",
+      text,
+      likes: 0,
+      liked: false,
+      replies: [],
+      createdAt: Date.now()
+    });
+    saveAll();
+    $("message").value = "";
+    $("charCount").textContent = "0 / 500";
+    render();
+  });
+
+  $("filter").addEventListener("change", render);
+
+  $("feed").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    if (btn.dataset.togglePostReplies) {
+      const id = btn.dataset.togglePostReplies;
+      if (visibleReplies.has(id)) {
+        visibleReplies.delete(id);
+      } else {
+        visibleReplies.add(id);
+      }
+      render();
+      return;
+    }
+
+    if (btn.dataset.showMore) {
+      expandedMore.add(btn.dataset.showMore);
+      render();
+      return;
+    }
+
+    if (btn.dataset.toggleNested) {
+      const id = btn.dataset.toggleNested;
+      if (visibleNested.has(id)) {
+        visibleNested.delete(id);
+      } else {
+        visibleNested.add(id);
+      }
+      render();
+      return;
+    }
+
+    if (btn.dataset.replyBtn) {
+      const target = btn.dataset.replyBtn;
+      const [postId] = target.split("|");
+      visibleReplies.add(postId);
+      openReplyTarget = (openReplyTarget === target) ? null : target;
+      render();
+      return;
+    }
+
+    if (btn.hasAttribute("data-cancel")) {
+      openReplyTarget = null;
+      render();
+      return;
+    }
+
+    if (btn.dataset.like) {
+      const p = posts.find((item) => String(item.id) === String(btn.dataset.like));
+      if (p) {
+        p.liked = !p.liked;
+        p.likes = Math.max(0, (Number(p.likes) || 0) + (p.liked ? 1 : -1));
+        saveAll();
+        render();
+      }
+      return;
+    }
+
+    if (btn.dataset.delete) {
+      posts = posts.filter((item) => String(item.id) !== String(btn.dataset.delete));
+      saveAll();
+      render();
+    }
+  });
+
+  $("feed").addEventListener("submit", (e) => {
+    const form = e.target.closest("form.reply-form");
+    if (!form) return;
+    e.preventDefault();
+
+    if (!profile.occupation) {
+      alert("先にプロフィールを設定してください。");
+      return;
+    }
+
+    const text = form.replyText.value.trim();
+    if (!text) return;
+
+    const postId = String(form.dataset.postId);
+    const parentId = String(form.dataset.parentId);
+
+    const post = posts.find((item) => String(item.id) === postId);
+    if (!post) return;
+
+    const newReply = {
+      id: String(Date.now()),
+      occupation: profile.occupation,
+      occupationDetail: profile.occupation === "その他" ? profile.occupationDetail : "",
+      age: profile.age || "非公開",
+      text,
+      isMyReply: true,
+      replies: [],
+      createdAt: Date.now()
+    };
+
+    if (parentId === "root") {
+      if (!Array.isArray(post.replies)) post.replies = [];
+      post.replies.push(newReply);
+    } else {
+      const parentObj = findReplyObj(post.replies, parentId);
+      if (parentObj) {
+        if (!Array.isArray(parentObj.replies)) parentObj.replies = [];
+        parentObj.replies.push(newReply);
+        visibleNested.add(parentId);
+      }
+    }
+
+    visibleReplies.add(postId);
+    openReplyTarget = null;
+    saveAll();
+    render();
+  });
+
+  updateProfileUI();
+  render();
+});
+</script>
+
+</body>
+</html>
