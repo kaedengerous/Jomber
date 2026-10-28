@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jomber｜職業でつながる匿名SNS</title>
+<style>
+:root {
+  --ink: #20283a;
+  --muted: #697386;
+  --line: #e4e8f0;
+  --paper: #ffffff;
+  --canvas: #f4f6fb;
+  --brand: #354a91;
+  --brand-dark: #26376f;
+  --soft: #eef1ff;
+  --accent: #dce5ff;
+  --shadow: 0 10px 30px rgba(28, 42, 78, .06);
+  --toast-bg: #20283a;
+  --toast-color: #ffffff;
+}
+
+body.dark-mode {
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --line: #334155;
+  --paper: #1e293b;
+  --canvas: #0f172a;
+  --brand: #6366f1;
+  --brand-dark: #818cf8;
+  --soft: #312e81;
+  --accent: #3730a3;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .3);
+  --toast-bg: #f8fafc;
+  --toast-color: #0f172a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  line-height: 1.6;
+  transition: background .2s ease, color .2s ease;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.site-header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding: 19px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.brand {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.brand span { color: var(--brand); }
+.site-header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+.theme-toggle-btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+main {
+  width: min(100% - 28px, 680px);
+  margin: 26px auto 38px;
+}
+
+.intro { margin: 0 0 18px; padding: 4px 3px 10px; }
+.eyebrow { color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+.intro h2 { margin: 4px 0 6px; font-size: clamp(22px, 5vw, 29px); line-height: 1.35; }
+.intro p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.panel, .post {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.section-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.section-heading h2 { margin: 0; font-size: 17px; }
+.section-icon {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  flex: 0 0 34px; border-radius: 11px; background: var(--soft); color: var(--brand); font-weight: 800;
+}
+
+.helper { margin: 4px 0 15px; color: var(--muted); font-size: 13px; }
+label { display: block; margin: 13px 0 6px; font-size: 13px; font-weight: 700; }
+
+select, input, textarea {
+  display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px;
+  padding: 11px 12px; background: var(--paper); color: var(--ink); outline: none;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+}
+
+textarea { min-height: 112px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  border: 0; border-radius: 10px; padding: 11px 16px; font-weight: 750;
+  transition: transform .12s ease, background .12s ease, opacity .12s ease;
+}
+
+.button:active { transform: translateY(1px); }
+.button-primary { background: var(--brand); color: #fff; }
+.button-primary:hover { opacity: .9; }
+.button-secondary { background: var(--soft); color: var(--ink); }
+.button-secondary:hover { opacity: .8; }
+.button-full { width: 100%; margin-top: 15px; }
+
+.profile-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+}
+
+.profile-info {
+  font-weight: 700;
+  color: var(--brand);
+  font-size: 15px;
+}
+
+.profile-status { padding: 10px 12px; border-radius: 10px; background: var(--canvas); color: var(--muted); font-size: 13px; }
+.profile-status.is-set { background: var(--soft); color: var(--brand); }
+
+.composer-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.char-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
+.feed-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.feed-tools label { margin-top: 0; font-size: 12px; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.tab-btn { background: var(--soft); color: var(--muted); border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.tab-btn.active { background: var(--brand); color: #fff; }
+
+.post { padding: 18px; }
+.post-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 999px; background: var(--soft); color: var(--brand); font-size: 12px; font-weight: 700; }
+.post-meta-right { text-align: right; }
+.anonymous-label { color: var(--muted); font-size: 11px; white-space: nowrap; display: block; }
+.post-time { color: var(--muted); font-size: 11px; }
+
+.post-text { margin: 16px 0; line-height: 1.85; overflow-wrap: anywhere; white-space: normal; }
+.post-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 13px; }
+.post-foot .button { padding: 7px 11px; font-size: 13px; }
+.like-button.is-liked { background: #fff0f4; color: #b72e5b; }
+
+.empty-state { text-align: center; padding: 28px 18px; color: var(--muted); }
+.empty-state strong { display: block; margin-bottom: 5px; color: var(--ink); }
+
+footer { text-align: center; padding: 16px 8px 4px; color: var(--muted); font-size: 12px; }
+
+.reply-list-container { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.reply { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--line); background: var(--canvas); border-radius: 0 10px 10px 0; }
+.reply.is-author { border-left: 4px solid var(--brand); background: var(--soft); }
+
+.reply-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+
+.author-badge {
+  display: inline-block;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.reply-text { margin: 4px 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reply-actions { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+.reply-actions .button { padding: 4px 9px; font-size: 12px; }
+
+.reply-children { margin-left: 16px; padding-left: 8px; border-left: 2px dashed var(--line); margin-top: 8px; }
+
+.btn-more-replies {
+  width: 100%; margin-top: 10px; padding: 8px; font-size: 13px;
+  background: var(--soft); color: var(--brand); border: 1px dashed var(--line); border-radius: 8px;
+}
+
+.btn-toggle-nested {
+  margin-top: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
+}
+
+.reply-form { margin-top: 10px; background: var(--paper); padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
+.reply-form textarea { min-height: 70px; margin-bottom: 8px; }
+.reply-form .button { margin-right: 6px; padding: 6px 12px; font-size: 12px; }
+
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--toast-bg);
+  color: var(--toast-color);
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0,0,0,.2);
+  transition: transform .25s ease, opacity .25s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+@media (max-width: 520px) {
+  main { width: min(100% - 20px, 680px); margin-top: 18px; }
+  .panel { padding: 16px; border-radius: 14px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .feed-tools { grid-template-columns: 1fr; }
+  .post { padding: 15px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1 class="brand"><span>JOM</span>BER</h1>
+  <p>肩書きでつながり、言葉で知り合う。</p>
+  <button class="theme-toggle-btn" id="themeToggle">🌙 ダーク</button>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="eyebrow">JOMBER - A PLACE TO CROSS PATHS</div>
+    <h2>違う仕事だから、<br>話せることがある。</h2>
+    <p>職業をきっかけに、いつもと違う視点や考えに出会う匿名SNS。</p>
+  </section>
+
+  <section class="panel" id="profilePanel">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">01</span>
+      <h2>あなたの匿名プロフィール</h2>
+    </div>
+    <p class="helper">本名や勤務先は入力せず、自由に職業名と年代を設定します。</p>
+
+    <div id="profileDisplay" class="profile-card" hidden>
+      <span id="profileText" class="profile-info"></span>
+      <button class="button button-secondary" id="editProfile">編集する</button>
+    </div>
+
+    <div id="profileForm">
+      <div class="form-row">
+        <div>
+          <label for="occupation">職業（自由記述・任意）</label>
+          <input type="text" id="occupation" placeholder="例：UIデザイナー、看護師、高校生など">
+        </div>
+        <div>
+          <label for="age">年代（公開）</label>
+          <select id="age">
+            <option value="10代">10代</option>
+            <option value="20代">20代</option>
+            <option value="30代">30代</option>
+            <option value="40代">40代</option>
+            <option value="50代">50代</option>
+            <option value="60代以上">60代以上</option>
+            <option value="非公開">公開しない</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="button button-primary button-full" id="saveProfile">プロフィールを確定</button>
+    </div>
+  </section>
+
+  <section class="panel" id="composer">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">02</span>
+      <h2>何を話してみますか？</h2>
+    </div>
+    <p class="helper">違う職業の人に聞いてみたいことや、日々の気づきを共有しましょう。</p>
+    <div id="currentProfile" class="profile-status">先にプロフィールを設定してください。</div>
+    <div class="composer-top">
+      <label for="message">投稿内容</label>
+      <span class="char-count" id="charCount">0 / 500</span>
+    </div>
+    <textarea id="message" maxlength="500" placeholder="例：仕事で大切にしていることは何ですか？"></textarea>
+    <button class="button button-primary button-full" id="publish">投稿する ↗</button>
+  </section>
+
+  <section class="panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="all">みんなの投稿</button>
+      <button class="tab-btn" data-tab="liked">いいねした投稿</button>
+      <button class="tab-btn" data-tab="replied">返信した投稿</button>
+    </div>
+
+    <div class="feed-tools" id="filterArea">
+      <div>
+        <label for="sortOrder">並び順</label>
+        <select id="sortOrder">
+          <option value="newest">新着順</option>
+          <option value="trend">トレンド順 🔥</option>
+        </select>
+      </div>
+      <div>
+        <label for="searchQuery">キーワード検索</label>
+        <input type="text" id="searchQuery" placeholder="本文や職業を検索...">
+      </div>
+    </div>
+  </section>
+
+  <div id="feed" aria-live="polite"></div>
+
+  <footer>
+    Jomber · リアルタイムデータベース接続版
+  </footer>
+</main>
+
+<div id="toast"></div>
+
+<!-- Firebase SDK (CDN) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrQgZ6vsNwMqBAWF88-Gg0gf3V-JrDjAo",
+    authDomain: "crosswork-app.firebaseapp.com",
+    projectId: "crosswork-app",
+    storageBucket: "crosswork-app.firebasestorage.app",
+    messagingSenderId: "839600441641",
+    appId: "1:839600441641:web:4436111620b8cb1cac0f38",
+    measurementId: "G-ERTHBGVR0Z"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const $ = (id) => document.getElementById(id);
+
+    const escapeHTML = (str) => String(str ?? "").replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[m]);
+
+    function showToast(msg) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2500);
+    }
+
+    let isDarkMode = load("jomber_darkmode", false);
+    function applyTheme() {
+      document.body.classList.toggle("dark-mode", isDarkMode);
+      $("themeToggle").textContent = isDarkMode ? "☀️ ライト" : "🌙 ダーク";
+    }
+    $("themeToggle").addEventListener("click", () => {
+      isDarkMode = !isDarkMode;
+      saveLocal("jomber_darkmode", isDarkMode);
+      applyTheme();
+    });
+    applyTheme();
+
+    function formatTime(timestamp) {
+      if (!timestamp) return "";
+      const now = Date.now();
+      const diff = Math.floor((now - timestamp) / 1000);
+
+      if (diff < 60) return "たった今";
+      if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
+
+      const d = new Date(timestamp);
+      const month = d.getMonth() + 1;
+      const date = d.getDate();
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      return `${month}月${date}日 ${hours}:${minutes}`;
+    }
+
+    function load(key, fallback) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? JSON.parse(val) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveLocal(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch {}
+    }
+
+    let profile = load("jomber_profile", {});
+    let posts = [];
+
+    let currentTab = "all";
+    const visibleReplies = new Set();
+    const expandedMore = new Set();
+    const visibleNested = new Set();
+
+    function occupationLabel(item) {
+      const occ = (item.occupation || "").trim();
+      return occ !== "" ? occ : "ななしの職業";
+    }
+
+    function updateProfileUI() {
+      $("occupation").value = profile.occupation || "";
+      $("age").value = profile.age || "非公開";
+
+      if (!profile.setupDone) {
+        $("profileForm").hidden = false;
+        $("profileDisplay").hidden = true;
+        $("currentProfile").textContent = "先にプロフィールを設定してください。";
+        $("currentProfile").classList.remove("is-set");
+        return;
+      }
+
+      const labelText = occupationLabel(profile) + " · " + (profile.age || "非公開");
+      $("profileText").textContent = labelText;
+      $("profileForm").hidden = true;
+      $("profileDisplay").hidden = false;
+
+      $("currentProfile").textContent = labelText;
+      $("currentProfile").classList.add("is-set");
+    }
+
+    let openReplyTarget = null;
+
+    function findReplyObj(list, targetId) {
+      for (const r of list) {
+        if (String(r.id) === String(targetId)) return r;
+        if (r.replies && r.replies.length > 0) {
+          const found = findReplyObj(r.replies, targetId);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function hasUserReplied(replies) {
+      if (!Array.isArray(replies)) return false;
+      for (const r of replies) {
+        if (r.isMyReply) return true;
+        if (hasUserReplied(r.replies)) return true;
+      }
+      return false;
+    }
+
+    function renderReplyForm(postId, parentId) {
+      const pIdStr = parentId ? String(parentId) : "root";
+      const targetKey = `${postId}|${pIdStr}`;
+      if (openReplyTarget !== targetKey) return "";
+
+      return `
+        <form class="reply-form" data-post-id="${postId}" data-parent-id="${pIdStr}">
+          <textarea name="replyText" maxlength="500" required placeholder="返信を入力（500文字まで）"></textarea>
+          <div>
+            <button class="button button-primary" type="submit">送信</button>
+            <button class="button button-secondary" type="button" data-cancel>キャンセル</button>
+          </div>
+        </form>
+      `;
+    }
+
+    function countAllReplies(replies) {
+      if (!Array.isArray(replies)) return 0;
+      let count = replies.length;
+      for (const r of replies) {
+        count += countAllReplies(r.replies);
+      }
+      return count;
+    }
+
+    function isPostAuthor(post, reply) {
+      return (
+        (post.occupation || "") === (reply.occupation || "") &&
+        post.age === reply.age
+      );
+    }
+
+    function isMyItem(item) {
+      if (!profile.setupDone) return false;
+      if (item.isMyReply) return true;
+      return (
+        (item.occupation || "") === (profile.occupation || "") &&
+        item.age === profile.age
+      );
+    }
+
+    function calculateTrendScore(post) {
+      const hoursOld = (Date.now() - post.createdAt) / (1000 * 60 * 60);
+      const likes = Number(post.likes) || 0;
+      return likes / Math.pow(hoursOld + 2, 1.5);
+    }
+
+    function renderRepliesHtml(replies, post) {
+      if (!Array.isArray(replies) || replies.length === 0) return "";
+
+      return `<div class="reply-children">${replies.map((r) => {
+        const hasChildren = r.replies && r.replies.length > 0;
+        const childCount = countAllReplies(r.replies);
+        const isNestedVisible = visibleNested.has(r.id);
+        const isAuthor = isPostAuthor(post, r);
+        const showDelete = isMyItem(r);
+
+        return `
+          <div class="reply ${isAuthor ? "is-author" : ""}">
+            <div class="reply-meta">
+              <span>
+                ${escapeHTML(occupationLabel(r))} · ${escapeHTML(r.age || "非公開")}
+                ${isAuthor ? '<span class="author-badge">投稿主</span>' : ''}
+              </span>
+              <span class="post-time">${formatTime(r.createdAt)}</span>
+            </div>
+            <div class="reply-text">${escapeHTML(r.text)}</div>
+            <div class="reply-actions">
+              <button class="button button-secondary" type="button" data-reply-btn="${post.id}|${r.id}">返信</button>
+              ${hasChildren ? `
+                <button class="button btn-toggle-nested" type="button" data-toggle-nested="${r.id}">
+                  ${isNestedVisible ? "▲ 返信を隠す" : `↳ 返信を表示（${childCount}件）`}
+                </button>
+              ` : ""}
+              ${showDelete ? `<button class="button button-secondary" data-delete-reply="${post.id}|${r.id}">削除</button>` : ""}
+            </div>
+            ${renderReplyForm(post.id, r.id)}
+            ${hasChildren && isNestedVisible ? renderRepliesHtml(r.replies, post) : ""}
+          </div>
+        `;
+      }).join("")}</div>`;
+    }
+
+    function render() {
+      const sortOrder = $("sortOrder").value;
+      const query = $("searchQuery").value.trim().toLowerCase();
+
+      let targetPosts = [...posts];
+
+      if (currentTab === "liked") {
+        targetPosts = targetPosts.filter(p => p.liked);
+      } else if (currentTab === "replied") {
+        targetPosts = targetPosts.filter(p => hasUserReplied(p.replies));
+      }
+
+      targetPosts = targetPosts.filter((p) => {
+        const matchQuery = !query || p.text.toLowerCase().includes(query) || (p.occupation || "").toLowerCase().includes(query);
+        return matchQuery;
+      });
+
+      if (sortOrder === "trend") {
+        targetPosts.sort((a, b) => calculateTrendScore(b) - calculateTrendScore(a));
+      } else {
+        targetPosts.sort((a, b) => b.createdAt - a.createdAt);
+      }
+
+      $("feed").innerHTML = targetPosts.length ? targetPosts.map((p) => {
+        const allReplies = p.replies || [];
+        const totalCount = allReplies.length;
+        const isVisible = visibleReplies.has(p.id);
+        const isExpanded = expandedMore.has(p.id);
+
+        const displayReplies = isExpanded ? allReplies : allReplies.slice(0, 5);
+        const remainingCount = totalCount - 5;
+        const showDeletePost = isMyItem(p);
+
+        return `
+          <article class="post">
+            <div class="post-head">
+              <div class="tag-list">
+                <span class="tag">${escapeHTML(occupationLabel(p))}</span>
+                <span class="tag">${escapeHTML(p.age || "非公開")}</span>
+              </div>
+              <div class="post-meta-right">
+                <span class="anonymous-label">匿名ユーザー</span>
+                <span class="post-time">${formatTime(p.createdAt)}</span>
+              </div>
+            </div>
+            <p class="post-text">${escapeHTML(p.text).replace(/\n/g, "<br>")}</p>
+            <div class="post-foot">
+              <button class="button button-secondary ${p.liked ? "is-liked" : ""}" data-like="${p.id}">
+                ${p.liked ? "♥" : "♡"} いいね ${Number(p.likes) || 0}
+              </button>
+              <button class="button button-secondary" type="button" data-reply-btn="${p.id}|root">
+                返信する
+              </button>
+              ${totalCount > 0 ? `
+                <button class="button button-secondary" type="button" data-toggle-post-replies="${p.id}">
+                  ${isVisible ? "返信を非表示" : `返信を表示（${totalCount}）`}
+                </button>
+              ` : ""}
+              ${showDeletePost ? `<button class="button button-secondary" data-delete="${p.id}">削除</button>` : ""}
+            </div>
+
+            ${renderReplyForm(p.id, null)}
+
+            ${isVisible && totalCount > 0 ? `
+              <div class="reply-list-container">
+                ${renderRepliesHtml(displayReplies, p)}
+                ${!isExpanded && remainingCount > 0 ? `
+                  <button class="button btn-more-replies" type="button" data-show-more="${p.id}">
+                    さらに返信を表示（残り ${remainingCount} 件）
+                  </button>
+                ` : ""}
+              </div>
+            ` : ""}
+          </article>
+        `;
+      }).join("") : `
+        <div class="panel empty-state">
+          <strong>${query ? "検索結果が見つかりませんでした" : currentTab === "liked" ? "いいねした投稿はありません" : currentTab === "replied" ? "返信した投稿はありません" : "まだ投稿がありません"}</strong>
+        </div>
+      `;
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        e.target.classList.add("active");
+        currentTab = e.target.dataset.tab;
+        $("filterArea").style.display = currentTab === "all" ? "grid" : "none";
+        render();
+      });
+    });
+
+    $("saveProfile").addEventListener("click", () => {
+      profile.occupation = $("occupation").value.trim();
+      profile.age = $("age").value;
+      profile.setupDone = true;
+      saveLocal("jomber_profile", profile);
+      updateProfileUI();
+      render();
+      showToast("プロフィールを保存しました");
+    });
+
+    $("editProfile").addEventListener("click", () => {
+      $("profileForm").hidden = false;
+      $("profileDisplay").hidden = true;
+    });
+
+    $("message").addEventListener("input", () => {
+      $("charCount").textContent = `${$("message").value.length} / 500`;
+    });
+
+    $("publish").addEventListener("click", async () => {
+      if (!profile.setupDone) {
+        alert("先にプロフィールを設定してください。");
+        return;
+      }
+      const text = $("message").value.trim();
+      if (!text) return;
+
+      try {
+        await addDoc(collection(db, "posts"), {
+          occupation: profile.occupation || "",
+          age: profile.age || "非公開",
+          text,
+          likes: 0,
+          replies: [],
+          createdAt: Date.now()
+        });
+        $("message").value = "";
+        $("charCount").textContent = "0 / 500";
+        showToast("投稿しました！");
+      } catch (e) {
+        alert("投稿に失敗しました");
+      }
+    });
+
+    $("sortOrder").addEventListener("change", render);
+    $("searchQuery").addEventListener("input", render);
+
+    function deleteReplyRecursive(list, targetId) {
+      const index = list.findIndex(r => String(r.id) === String(targetId));
+      if (index !== -1) {
+        list.splice(index, 1);
+        return true;
+      }
+      for (const r of list) {
+        if (r.replies && r.replies.length > 0) {
+          if (deleteReplyRecursive(r.replies, targetId)) return true;
+        }
+      }
+      return false;
+    }
+
+    $("feed").addEventListener("click", async (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+
+      if (btn.dataset.togglePostReplies) {
+        const id = btn.dataset.togglePostReplies;
+        if (visibleReplies.has(id)) {
+          visibleReplies.delete(id);
+        } else {
+          visibleReplies.add(id);
+        }
+        render();
+        return;
+      }
+
+      if (btn.dataset.showMore) {
+        expandedMore.add(btn.dataset.showMore);
+        render();
+        return;
+      }
+
+      if (btn.dataset.toggleNested) {
+        const id = btn.dataset.toggleNested;
+        if (visibleNested.has(id)) {
+          visibleNested.delete(id);
+        } else {
+          visibleNested.add(id);
+        }
+        render();
+        return;
+      }
+
+      if (btn.dataset.replyBtn) {
+        const target = btn.dataset.replyBtn;
+        const [postId] = target.split("|");
+        visibleReplies.add(postId);
+        openReplyTarget = (openReplyTarget === target) ? null : target;
+        render();
+        return;
+      }
+
+      if (btn.hasAttribute("data-cancel")) {
+        openReplyTarget = null;
+        render();
+        return;
+      }
+
+      if (btn.dataset.like) {
+        const postId = btn.dataset.like;
+        const p = posts.find((item) => String(item.id) === String(postId));
+        if (p) {
+          const likedKey = `jomber_liked_${postId}`;
+          const isLikedNow = load(likedKey, false);
+          const newLiked = !isLikedNow;
+          const newLikes = Math.max(0, (Number(p.likes) || 0) + (newLiked ? 1 : -1));
+
+          saveLocal(likedKey, newLiked);
+          p.liked = newLiked;
+
+          try {
+            await updateDoc(doc(db, "posts", postId), { likes: newLikes });
+          } catch (err) {
+            console.error(err);
+          }
+        }
+        return;
+      }
+
+      if (btn.dataset.delete) {
+        const postId = btn.dataset.delete;
+        try {
+          await deleteDoc(doc(db, "posts", postId));
+          showToast("投稿を削除しました");
+        } catch (e) {
+          alert("削除に失敗しました");
+        }
+        return;
+      }
+
+      if (btn.dataset.deleteReply) {
+        const [postId, replyId] = btn.dataset.deleteReply.split("|");
+        const post = posts.find(item => String(item.id) === String(postId));
+        if (post && post.replies) {
+          deleteReplyRecursive(post.replies, replyId);
+          try {
+            await updateDoc(doc(db, "posts", postId), { replies: post.replies });
+            showToast("返信を削除しました");
+          } catch (e) {
+            alert("返信の削除に失敗しました");
+          }
+        }
+        return;
+      }
+    });
+
+    $("feed").addEventListener("submit", async (e) => {
+      const form = e.target.closest("form.reply-form");
+      if (!form) return;
+      e.preventDefault();
+
+      if (!profile.setupDone) {
+        alert("先にプロフィールを設定してください。");
+        return;
+      }
+
+      const text = form.replyText.value.trim();
+      if (!text) return;
+
+      const postId = String(form.dataset.postId);
+      const parentId = String(form.dataset.parentId);
+
+      const post = posts.find((item) => String(item.id) === postId);
+      if (!post) return;
+
+      const newReply = {
+        id: String(Date.now()),
+        occupation: profile.occupation || "",
+        age: profile.age || "非公開",
+        text,
+        isMyReply: true,
+        replies: [],
+        createdAt: Date.now()
+      };
+
+      if (!Array.isArray(post.replies)) post.replies = [];
+
+      if (parentId === "root") {
+        post.replies.push(newReply);
+      } else {
+        const parentObj = findReplyObj(post.replies, parentId);
+        if (parentObj) {
+          if (!Array.isArray(parentObj.replies)) parentObj.replies = [];
+          parentObj.replies.push(newReply);
+          visibleNested.add(parentId);
+        }
+      }
+
+      try {
+        await updateDoc(doc(db, "posts", postId), { replies: post.replies });
+        visibleReplies.add(postId);
+        openReplyTarget = null;
+        showToast("返信を送信しました");
+      } catch (err) {
+        alert("返信の送信に失敗しました");
+      }
+    });
+
+    updateProfileUI();
+
+    onSnapshot(collection(db, "posts"), (snapshot) => {
+      posts = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+        const likedKey = `jomber_liked_${id}`;
+        return {
+          id: id,
+          ...data,
+          liked: load(likedKey, false),
+          replies: fixReplies(data.replies || [])
+        };
+      });
+      render();
+    });
+
+    function fixReplies(items) {
+      if (!Array.isArray(items)) return [];
+      return items.map((item) => ({
+        ...item,
+        id: String(item.id),
+        createdAt: item.createdAt || Date.now(),
+        replies: fixReplies(item.replies)
+      }));
+    }
+  });
+</script>
+
+</body>
+</html>
